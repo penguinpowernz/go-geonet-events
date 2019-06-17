@@ -6,10 +6,12 @@ import (
 	nats "github.com/nats-io/go-nats"
 )
 
+// Notifier sends events to event buses
 type Notifier struct {
 	buses []EventBus
 }
 
+// EventBus is a simple function that can send events on a bus
 type EventBus func(Event)
 
 func (ntfr *Notifier) AddBus(bus EventBus) {

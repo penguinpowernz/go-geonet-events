@@ -7,6 +7,8 @@ import (
 	geonet "github.com/penguinpowernz/go-geonet"
 )
 
+// NewQuakeGetter will return a function that can be called to get
+// a list of quakes from the API
 func NewQuakeGetter() func() ([]geonet.Quake, error) {
 	cl := geonet.NewClient()
 	expo := backoff.NewExponentialBackOff()

@@ -7,15 +7,18 @@ import (
 	geonet "github.com/penguinpowernz/go-geonet"
 )
 
+// NewProcessor will return a new processor with a cache already instantiated
 func NewProcessor() *Processor {
 	quakes := cache.New(time.Hour*24, time.Hour*24)
 	return &Processor{quakes}
 }
 
+// Processor will process quakes given to it
 type Processor struct {
 	cache *cache.Cache
 }
 
+// Process will process new quakes and return events
 func (pr *Processor) Process(qks []geonet.Quake) Events {
 	evts := Events{}
 
