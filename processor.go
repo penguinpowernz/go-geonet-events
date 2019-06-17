@@ -32,7 +32,7 @@ func (pr *Processor) Process(qks []geonet.Quake) Events {
 
 		xqk := qki.(geonet.Quake)
 
-		fields := compareQuake(xqk, qk)
+		fields := CompareQuakes(xqk, qk)
 		if len(fields) == 0 {
 			continue
 		}
@@ -44,7 +44,9 @@ func (pr *Processor) Process(qks []geonet.Quake) Events {
 	return evts
 }
 
-func compareQuake(a, b geonet.Quake) []string {
+// CompareQuakes will compare 2 quakes and return a list of fields
+// that are different between them
+func CompareQuakes(a, b geonet.Quake) []string {
 	fields := []string{}
 	if a.Magnitude != b.Magnitude {
 		fields = append(fields, "magnitude")
