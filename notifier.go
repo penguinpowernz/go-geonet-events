@@ -2,6 +2,7 @@ package events
 
 import (
 	"encoding/json"
+	"log"
 
 	nats "github.com/nats-io/go-nats"
 )
@@ -33,7 +34,8 @@ func NatsNotifier(nc *nats.Conn) EventBus {
 	return func(evt Event) {
 		data, err := json.Marshal(evt)
 		if err != nil {
-
+			log.Printf("ERROR: failed to marshal data for %s.%s event", evt.Quake.PublicID, evt.Type)
+			return
 		}
 		err = nc.Publish("geonet.quakes."+evt.Type, data)
 	}
