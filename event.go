@@ -13,8 +13,8 @@ type Event struct {
 // Events is a collection of events
 type Events []Event
 
-func (evts Events) Add(t string, qk geonet.Quake, updatedFields ...[]string) {
 // Add will add an event to a collection
+func (evts *Events) Add(t string, qk geonet.Quake, updatedFields ...[]string) {
 	evt := Event{
 		Type:  t,
 		Quake: qk,
@@ -24,5 +24,5 @@ func (evts Events) Add(t string, qk geonet.Quake, updatedFields ...[]string) {
 		evt.UpdatedFields = updatedFields[0]
 	}
 
-	evts = append(evts, evt)
+	*evts = append(*evts, evt)
 }
