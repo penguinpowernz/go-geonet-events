@@ -1,6 +1,7 @@
 package events
 
 import (
+	"os"
 	"time"
 
 	"github.com/cenkalti/backoff"
@@ -13,6 +14,10 @@ func NewQuakeGetter() func() ([]geonet.Quake, error) {
 	cl := geonet.NewClient()
 	expo := backoff.NewExponentialBackOff()
 	expo.MaxElapsedTime = time.Minute * 2
+
+	if ua := os.Getenv("USER_AGENT"); ua != "" {
+		cl.UserAgent = ua
+	}
 
 	return func() ([]geonet.Quake, error) {
 		var err error
