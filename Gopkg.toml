@@ -30,10 +30,6 @@
   version = "3.0.0"
 
 [[constraint]]
-  name = "github.com/nats-io/go-nats"
-  version = "2.0.0"
-
-[[constraint]]
   name = "github.com/patrickmn/go-cache"
   version = "2.1.0"
 

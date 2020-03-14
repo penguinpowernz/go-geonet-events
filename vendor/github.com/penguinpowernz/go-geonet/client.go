@@ -16,16 +16,18 @@ var sfmt = fmt.Sprintf
 
 type Client struct {
 	*http.Client
-	Version string
+	Version   string
+	UserAgent string
 }
 
 func NewClient() *Client {
-	return &Client{&http.Client{}, defaultVersion}
+	return &Client{&http.Client{}, defaultVersion, "Geonet Golang API Client"}
 }
 
 func (c *Client) Request(method, path string) (*http.Request, error) {
 	url := fmt.Sprintf("%s/%s", baseURI, strings.TrimLeft(path, "/"))
 	req, err := http.NewRequest(method, url, nil)
+	req.Header.Set("User-Agent", c.UserAgent)
 	req.Header.Set("Accept", "application/vnd.geo+json;version="+c.Version)
 	return req, err
 }

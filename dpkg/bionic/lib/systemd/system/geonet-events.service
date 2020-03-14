@@ -1,0 +1,12 @@
+[Unit]
+Description=Geonet Events
+
+[Service]
+EnvironmentFile=/etc/default/geonet-events
+ExecStart=/usr/bin/geonet-events
+Restart=always
+RestartSec=5
+StartLimitInterval=0
+
+[Install]
+WantedBy=multi-user.target
