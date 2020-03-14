@@ -4,6 +4,7 @@ import (
 	"flag"
 	"io/ioutil"
 	"log"
+	"os"
 	"time"
 
 	"github.com/ghodss/yaml"
@@ -15,6 +16,27 @@ import (
 type config struct {
 	NATSURL string `json:"nats_url"`
 	MQTTURL string `json:"mqtt_url"`
+	WSPort  string `json:"mqtt_url"`
+}
+
+func (c config) LoadFromFile(fn string) error {
+	data, err := ioutil.ReadFile(fn)
+	if err != nil {
+		return err
+	}
+
+	if err := yaml.Unmarshal(data, &c); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c config) LoadFromEnv() error {
+	c.MQTTURL = os.Getenv("MQTT_URL")
+	c.NATSURL = os.Getenv("NATS_URL")
+	c.WSPort = os.Getenv("WS_PORT")
+	return nil
 }
 
 func main() {
@@ -22,17 +44,19 @@ func main() {
 	flag.StringVar(&cfgFile, "c", "", "the path to the config file")
 	flag.Parse()
 
-	cfg := config{}
-	data, err := ioutil.ReadFile(cfgFile)
+	var cfg config
+	var err error
+	if cfgFile == "" {
+		err = cfg.LoadFromEnv()
+	} else {
+		err = cfg.LoadFromFile(cfgFile)
+	}
+
 	if err != nil {
 		log.Fatalf("failed to read config file: %s", err)
 	}
 
-	if err := yaml.Unmarshal(data, &cfg); err != nil {
-		log.Fatalf("failed to read config file: %s", err)
-	}
-
-	if cfg.NATSURL == "" && cfg.MQTTURL == "" {
+	if cfg.NATSURL == "" && cfg.MQTTURL == "" && cfg.WSPort == "" {
 		log.Fatalf("no output servers specified")
 	}
 
@@ -43,9 +67,15 @@ func main() {
 		ntfr.AddBus(bus)
 	}
 
-	if cfg.MQTTURL == "" {
-		bus := createMQTTBus(cfg.MQTTURL)
+	// if cfg.MQTTURL == "" {
+	// 	bus := createMQTTBus(cfg.MQTTURL)
+	// 	ntfr.AddBus(bus)
+	// }
+
+	if cfg.WSPort != "" {
+		svr, bus := events.NewWebsocketNotifier(cfg.WSPort)
 		ntfr.AddBus(bus)
+		log.Printf("ERROR: Websocket server stopped: %s", svr.ListenAndServe())
 	}
 
 	getQuakes := events.NewQuakeGetter()
@@ -73,8 +103,8 @@ func createNATSBus(url string) events.EventBus {
 	return events.NatsNotifier(nc)
 }
 
-func createMQTTBus(url string) events.EventBus {
-	return func(events.Event) {
+// func createMQTTBus(url string) events.EventBus {
+// 	return func(events.Event) {
 
-	}
-}
+// 	}
+// }

@@ -1,6 +1,7 @@
 VERSION=$(shell git describe --tags|tr -d 'v')
 
 build:
+	./scripts/embed_html.sh
 	go build -o bin/geonet-events ./cmd/geonet-events
 
 pkg:

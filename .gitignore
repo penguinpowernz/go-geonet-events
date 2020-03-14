@@ -1,1 +1,3 @@
 dpkg/bionic/usr/bin/geonet-events
+bin/*
+*.deb
