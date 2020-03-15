@@ -14,9 +14,11 @@ import (
 )
 
 type config struct {
-	NATSURL string `json:"nats_url"`
-	MQTTURL string `json:"mqtt_url"`
-	WSPort  string `json:"mqtt_url"`
+	NATSUser     string `json:"nats_user"`
+	NATSPassword string `json:"nats_password"`
+	NATSURL      string `json:"nats_url"`
+	MQTTURL      string `json:"mqtt_url"`
+	WSPort       string `json:"ws_port"`
 }
 
 func (c config) LoadFromFile(fn string) error {
@@ -32,9 +34,11 @@ func (c config) LoadFromFile(fn string) error {
 	return nil
 }
 
-func (c config) LoadFromEnv() error {
+func (c *config) LoadFromEnv() error {
 	c.MQTTURL = os.Getenv("MQTT_URL")
 	c.NATSURL = os.Getenv("NATS_URL")
+	c.NATSUser = os.Getenv("NATS_USER")
+	c.NATSPassword = os.Getenv("NATS_PASSWORD")
 	c.WSPort = os.Getenv("WS_PORT")
 	return nil
 }
@@ -63,7 +67,7 @@ func main() {
 	ntfr := &events.Notifier{}
 
 	if cfg.NATSURL != "" {
-		bus := createNATSBus(cfg.NATSURL)
+		bus := createNATSBus(cfg.NATSURL, cfg.NATSUser, cfg.NATSPassword)
 		ntfr.AddBus(bus)
 	}
 
@@ -94,8 +98,8 @@ func main() {
 	}
 }
 
-func createNATSBus(url string) events.EventBus {
-	nc, err := nats.Connect(url)
+func createNATSBus(url, user, pass string) events.EventBus {
+	nc, err := nats.Connect(url, nats.UserInfo(user, pass))
 	if err != nil {
 		panic(err)
 	}
