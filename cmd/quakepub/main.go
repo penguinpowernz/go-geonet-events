@@ -79,7 +79,12 @@ func main() {
 	if cfg.WSPort != "" {
 		svr, bus := events.NewWebsocketNotifier(cfg.WSPort)
 		ntfr.AddBus(bus)
-		log.Printf("ERROR: Websocket server stopped: %s", svr.ListenAndServe())
+		go func() {
+			for {
+				log.Printf("ERROR: Websocket server stopped: %s", svr.ListenAndServe())
+				time.Sleep(time.Second * 5)
+			}
+		}()
 	}
 
 	getQuakes := events.NewQuakeGetter()
