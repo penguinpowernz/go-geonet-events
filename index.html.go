@@ -1,8 +1,14 @@
 package events
 
+var version string
+
 var indexHTML = []byte(`<html>
 <head>
-    <title>Geonet Quake Events Forwarder</title>
+    <title>Geonet New Zealand Earthquake Events Forwarder v` + version + `</title>
+    <style type="text/css">
+        body { font-family:  Arial, Helvetica, sans-serif; padding: 10 200 10 200}
+        .code { font-family: 'Courier New', Courier, monospace; background-color: black; color: white;  padding: 3 5 3 5; border-radius: 5px;}
+    </style>
 </head>
 <body>
     <div>
@@ -10,22 +16,36 @@ var indexHTML = []byte(`<html>
         <h2>This is completely unofficial and unaffiliated with Geonet</h2>
         
         <p>
-            This page describes a free service which forwards events from the Geonet API in an evented manner.  This means you
-            don't need to poll for quakes anymore, they can be delivered via the following protocols:
+            This page describes a free service which forwards events from the <a href="https://api.geonet.org.nz/">Geonet API</a> in an evented manner.  This means you
+            don't need to poll the <a href="https://api.geonet.org.nz/">Geonet API</a> for quakes anymore, they can be delivered via the following protocols:
 
             <ul>
-                <li>NATS via <pre>nats://quakes.nz:4222</pre> on subjects <pre>geonet.quakes.new</pre> and <pre>geonet.quakes.updated</pre></li>
-                <li>WebSockets via <pre>ws://quakes.nz/events</pre></li>
-                <li>MQTT via <pre>mqtt://quakes.nz:8883</pre> (COMING SOON)</li>
+                <li>NATS via <span class="code">nats://quakes.nz:4222</span> on subjects <span class="code">geonet.quakes.new</span> and <span class="code">geonet.quakes.updated</span> (username of <span class="code">client</span> and empty password)</li>
+                <li>WebSockets via <span class="code">ws://quakes.nz/events</span></li>
+                <li>MQTT via <span class="code">mqtt://quakes.nz:8883</span> (COMING SOON)</li>
             </ul>
         </p>
 
-        <p>The source code for this service is available at https://github.com/penguinpowernz/go-geonet-events</p>
+        <p>
+            The source code for this service is available at <a href="https://github.com/penguinpowernz/go-geonet-events">https://github.com/penguinpowernz/go-geonet-events</a>. 
+            We would love and appreciate contributions to the code but would prefer if this was the only running instance of the code given that it polls Geonets API every second.
+        </p>
     </div>
+
+    <h2>Event types</h2>
+
+    <p>
+        There are two event types; <span class="code">new</span> and <span class="code">updated</span>. The latter is only sent when there is an update to a previous
+        quake that was sent out.  This is usually due revisions to the magnitude and depth of the quakes.
+    </p>
+
+    <p class="code">
+
+    </p>
 
     <h2>Websockets Test</h2>
     <p>Below is an example of the websockets events running.  When a new earthquake happens you should see it appear below.</p>
-    <div id="container"></div>
+    <div id="container" class="code" style="padding: 10px; padding-left: 20px;"></div>
 
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script type="text/javascript">
