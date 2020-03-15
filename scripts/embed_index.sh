@@ -10,6 +10,6 @@ var version string
 var indexHTML = []byte(\`$html\`)
 EOF
 
-sed 's/<\/title>/ v\`\+version\+\`<\/title>/' -i index.html.go
+sed 's/<\/h1>/ v\`\+version\+\`<\/h1>/' -i index.html.go
 
 gofmt -w index.html.go

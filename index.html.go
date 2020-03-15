@@ -4,7 +4,7 @@ var version string
 
 var indexHTML = []byte(`<html>
 <head>
-    <title>Geonet New Zealand Earthquake Events Forwarder v` + version + `</title>
+    <title>Geonet New Zealand Earthquake Events Forwarder</title>
     <style type="text/css">
         body { font-family:  Arial, Helvetica, sans-serif; padding: 10 200 10 200}
         .code { font-family: 'Courier New', Courier, monospace; background-color: black; color: white;  padding: 3 5 3 5; border-radius: 5px;}
@@ -12,7 +12,7 @@ var indexHTML = []byte(`<html>
 </head>
 <body>
     <div>
-        <h1>Geonet Quake Events Forwarder</h1>
+        <h1>Geonet Quake Events Forwarder v` + version + `</h1>
         <h2>This is completely unofficial and unaffiliated with Geonet</h2>
         
         <p>
@@ -37,10 +37,6 @@ var indexHTML = []byte(`<html>
     <p>
         There are two event types; <span class="code">new</span> and <span class="code">updated</span>. The latter is only sent when there is an update to a previous
         quake that was sent out.  This is usually due revisions to the magnitude and depth of the quakes.
-    </p>
-
-    <p class="code">
-
     </p>
 
     <h2>Websockets Test</h2>
