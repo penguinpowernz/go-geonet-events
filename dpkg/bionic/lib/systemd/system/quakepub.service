@@ -1,0 +1,12 @@
+[Unit]
+Description=Geonet Earthquake Events Publishing
+
+[Service]
+EnvironmentFile=/etc/default/quakepub
+ExecStart=/usr/bin/quakepub
+Restart=always
+RestartSec=5
+StartLimitInterval=0
+
+[Install]
+WantedBy=multi-user.target

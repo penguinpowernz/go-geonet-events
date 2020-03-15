@@ -1,0 +1,6 @@
+USER_AGENT="Golang Geonet Events API"
+MQTT_URL=""
+NATS_URL="nats://localhost:4222"
+NATS_USER=""
+NATS_PASSWORD=""
+WS_PORT=":80"

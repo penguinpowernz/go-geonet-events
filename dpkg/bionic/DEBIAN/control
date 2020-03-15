@@ -1,12 +1,12 @@
-Package: geonet-events
 Version: 0.0.1
+Package: quakepub
 Section: misc
 Priority: optional
 Architecture: all
 Maintainer: Robert McLeod <robert@penguinpower.co.nz>
 Essential: no
-Homepage: http://example.com
-Installed-Size: 
-Description: This is a description
-  This is a longer description
-  that takes up multiple lines
+Homepage: http://quakes.nz
+Installed-Size: 17457
+Description: Evented Earthquakes from the Geonet API
+  Delivers earthquake events from the Geonet API over
+  NATS and WebSockets

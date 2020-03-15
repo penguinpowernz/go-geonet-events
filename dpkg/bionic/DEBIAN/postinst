@@ -1,5 +1,5 @@
 #!/bin/bash
 
-# your code goes here
+[[ -f "/etc/default/quakepub" ]] || cp /usr/share/quakepub/contrib/default /etc/default/quakepub;
 
 exit 0;
