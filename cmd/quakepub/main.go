@@ -73,7 +73,7 @@ func main() {
 		ntfr.AddBus(bus)
 	}
 
-	if cfg.MQTTURL == "" {
+	if cfg.MQTTURL != "" {
 		bus := createMQTTBus(cfg.MQTTURL)
 		ntfr.AddBus(bus)
 	}
