@@ -3,7 +3,10 @@ package events
 import (
 	"encoding/json"
 	"log"
+	"net/http"
+	"time"
 
+	mqtt "github.com/eclipse/paho.mqtt.golang"
 	nats "github.com/nats-io/go-nats"
 )
 
@@ -34,9 +37,31 @@ func NatsNotifier(nc *nats.Conn) EventBus {
 	return func(evt Event) {
 		data, err := json.Marshal(evt)
 		if err != nil {
-			log.Printf("ERROR: failed to marshal data for %s.%s event", evt.Quake.PublicID, evt.Type)
+			log.Printf("ERROR: failed to marshal data for %s.%s event: %s", evt.Quake.PublicID, evt.Type, err)
 			return
 		}
-		err = nc.Publish("geonet.quakes."+evt.Type, data)
+		if err = nc.Publish("geonet.quakes."+evt.Type, data); err != nil {
+			log.Printf("ERROR: failed send %s.%s event %s", evt.Quake.PublicID, evt.Type, err)
+		}
 	}
+}
+
+// MQTTNotifier returns an event bus that forwards events over MQTT
+func MQTTNotifier(cl mqtt.Client) EventBus {
+	return func(evt Event) {
+		data, err := json.Marshal(evt)
+		if err != nil {
+			log.Printf("ERROR: failed to marshal data for %s.%s event: %s", evt.Quake.PublicID, evt.Type, err)
+			return
+		}
+		t := cl.Publish("geonet/events/"+evt.Type, 0, false, data)
+		if t.WaitTimeout(time.Second) && t.Error() != nil {
+			log.Printf("ERROR: failed send %s.%s event %s", evt.Quake.PublicID, evt.Type, t.Error())
+		}
+	}
+}
+
+// WebsocketNotifier returns an event bus that forwards events over websockets
+func WebsocketNotifier(svr *http.Server) EventBus {
+	return svr.Handler.(*wsManager).handleEvent
 }

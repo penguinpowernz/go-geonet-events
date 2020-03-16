@@ -63,8 +63,3 @@ func (mgr *wsManager) handleEvent(evt Event) {
 		}
 	}
 }
-
-// WebsocketNotifier returns a new event bus for using the websocket server
-func WebsocketNotifier(svr *http.Server) EventBus {
-	return svr.Handler.(*wsManager).handleEvent
-}

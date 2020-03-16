@@ -8,6 +8,7 @@ import (
 	"os"
 	"time"
 
+	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/ghodss/yaml"
 	nats "github.com/nats-io/go-nats"
 
@@ -72,10 +73,10 @@ func main() {
 		ntfr.AddBus(bus)
 	}
 
-	// if cfg.MQTTURL == "" {
-	// 	bus := createMQTTBus(cfg.MQTTURL)
-	// 	ntfr.AddBus(bus)
-	// }
+	if cfg.MQTTURL == "" {
+		bus := createMQTTBus(cfg.MQTTURL)
+		ntfr.AddBus(bus)
+	}
 
 	if cfg.WSPort != "" {
 		svr := events.NewWebsocketServer(cfg.WSPort)
@@ -109,8 +110,19 @@ func createNATSBus(url, user, pass string) events.EventBus {
 	return events.NatsNotifier(nc)
 }
 
-// func createMQTTBus(url string) events.EventBus {
-// 	return func(events.Event) {
+func createMQTTBus(url string) events.EventBus {
+	opts := mqtt.NewClientOptions()
+	opts.AddBroker(url)
+	opts.SetAutoReconnect(true)
+
+	cl := mqtt.NewClient(opts)
+	t := cl.Connect()
+	if t.WaitTimeout(time.Second*5) && t.Error() != nil {
+		panic(t.Error())
+	}
+
+	return events.MQTTNotifier(cl)
+}
 
 func listenAndRestartServer(svr *http.Server) {
 	for {
