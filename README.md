@@ -18,3 +18,89 @@ Basically it does the polling for you, every second, of the Geonet API.  Then yo
 
 We would love and appreciate contributions to the code but would prefer if the only running instance was at [quakes.nz](http://quakes.nz) given
 that many people running it could overload Geonets servers.
+
+## Payloads
+
+There are two event types; `new` and `updated`. The latter is only sent when there is an update to a previous quake that was sent out.  This
+is usually due to revisions to the magnitude and depth of the quakes, the `quality` field can be used to determine the usefulness of the event.
+
+### New
+
+```json
+{
+    "type": "new",
+    "quake": {
+        "publicID": "2020p203673",
+        "time": "2020-03-16T08:37:10.376Z",
+        "depth": 10.83877039,
+        "magnitude": 1.021546187,
+        "locality": "10 km north-east of Matawai",
+        "mmi": -1,
+        "quality": "preliminary",
+        "coordinates": [
+            177.6768036,
+            -38.28015518
+        ]
+    }
+}
+```
+
+### Updated
+
+```json
+{
+    "type": "update",
+    "quake": {
+        "publicID": "2020p203673",
+        "time": "2020-03-16T08:37:10.376Z",
+        "depth": 23.87388039,
+        "magnitude": 1.222926187,
+        "locality": "10 km north-east of Matawai",
+        "mmi": -1,
+        "quality": "best",
+        "coordinates": [
+            177.6768036,
+            -38.28015518
+        ]
+    },
+    "updated_fields": [
+        "quality",
+        "magnitude",
+        "depth"
+    ]
+}
+```
+
+# Usage
+
+## NATS
+
+Golang:
+
+```golang
+import "github.com/nats-io/nats.go"
+
+nc, err := nats.Connect("nats://quakes.nz:4222", nats.UserInfo("client", ""))
+
+sub, err := nc.SubscribeSync("geonet.quakes.>")
+msg := sub.Next()
+
+fmt.Printf("Received: %s", msg.Data)
+```
+
+## Websocket
+
+Golang:
+
+```golang
+import "golang.org/x/net/websocket"
+
+url := "ws://quakes.nz/events"
+origin := "http://quakes.nz/"
+ws, err := websocket.Dial(url, "", origin)
+
+var msg = make([]byte, 512)
+n, err := ws.Read(msg)
+
+fmt.Printf("Received: %s.\n", msg[:n])
+```
