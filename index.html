@@ -33,8 +33,15 @@
 
     <p>
         There are two event types; <span class="code">new</span> and <span class="code">updated</span>. The latter is only sent when there is an update to a previous
-        quake that was sent out.  This is usually due revisions to the magnitude and depth of the quakes.
+        quake that was sent out.  This is usually due to revisions to the magnitude and depth of the quakes, the `quality` field can be used to determine the usefulness
+        of the event.
     </p>
+
+    <h3>New payload</h3>
+    <script src="https://gist.github.com/penguinpowernz/93ea0468d592456ae596a232bf217a4c.js"></script>
+
+    <h3>Update payload</h3>
+    <script src="https://gist.github.com/penguinpowernz/6c55fcdd603e3d59953d0155e01482a3.js"></script>
 
     <h2>Websockets Test</h2>
     <p>Below is an example of the websockets events running.  When a new earthquake happens you should see it appear below.</p>
