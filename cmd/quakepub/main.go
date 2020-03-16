@@ -4,6 +4,7 @@ import (
 	"flag"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"time"
 
@@ -77,14 +78,10 @@ func main() {
 	// }
 
 	if cfg.WSPort != "" {
-		svr, bus := events.NewWebsocketNotifier(cfg.WSPort)
+		svr := events.NewWebsocketServer(cfg.WSPort)
+		bus := events.WebsocketNotifier(svr)
 		ntfr.AddBus(bus)
-		go func() {
-			for {
-				log.Printf("ERROR: Websocket server stopped: %s", svr.ListenAndServe())
-				time.Sleep(time.Second * 5)
-			}
-		}()
+		go listenAndRestartServer(svr)
 	}
 
 	getQuakes := events.NewQuakeGetter()
@@ -115,5 +112,9 @@ func createNATSBus(url, user, pass string) events.EventBus {
 // func createMQTTBus(url string) events.EventBus {
 // 	return func(events.Event) {
 
-// 	}
-// }
+func listenAndRestartServer(svr *http.Server) {
+	for {
+		log.Printf("ERROR: Websocket server stopped: %s", svr.ListenAndServe())
+		time.Sleep(time.Second * 5)
+	}
+}

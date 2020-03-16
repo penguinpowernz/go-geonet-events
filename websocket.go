@@ -8,9 +8,9 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-// NewWebsocketNotifier will create a new websocket notifier returning the server
+// NewWebsocketServer will create a new websocket notifier returning the server
 // that will serve the websockets, and an EventBus to send events to
-func NewWebsocketNotifier(port string) (*http.Server, EventBus) {
+func NewWebsocketServer(port string) *http.Server {
 	mgr := &wsManager{}
 
 	return &http.Server{
@@ -19,7 +19,7 @@ func NewWebsocketNotifier(port string) (*http.Server, EventBus) {
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
-	}, mgr.handleEvent
+	}
 }
 
 type wsManager struct {
@@ -62,4 +62,9 @@ func (mgr *wsManager) handleEvent(evt Event) {
 			fmt.Println(err)
 		}
 	}
+}
+
+// WebsocketNotifier returns a new event bus for using the websocket server
+func WebsocketNotifier(svr *http.Server) EventBus {
+	return svr.Handler.(*wsManager).handleEvent
 }
