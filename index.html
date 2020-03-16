@@ -2,9 +2,12 @@
 <head>
     <title>Geonet New Zealand Earthquake Events Forwarder</title>
     <style type="text/css">
-        body { font-family:  Arial, Helvetica, sans-serif; padding: 10 200 10 200;}
+        body { font-family:  Arial, Helvetica, sans-serif; padding: 10 200 10 200; color: white; background-color: #181a1b;}
         .code { font-family: 'Courier New', Courier, monospace; background-color: black; color: white;  padding: 3 5 3 5; border-radius: 5px;}
         ul li { padding: 10 5 10 5; }
+        a { font-weight: bold;text-decoration: none;}
+        a:visited { color:cyan;}
+        a:hover { color: lightblue; }
     </style>
 </head>
 <body>
@@ -37,17 +40,25 @@
         of the event.
     </p>
 
-    <h3>New payload</h3>
-    <script src="https://gist.github.com/penguinpowernz/93ea0468d592456ae596a232bf217a4c.js"></script>
+    <div style="overflow: hidden"></div>
+        <div style="float: right; width: 45%">
+            <h3>New payload</h3>
+            <script src="https://gist.github.com/penguinpowernz/93ea0468d592456ae596a232bf217a4c.js"></script>
+        </div>
 
-    <h3>Update payload</h3>
-    <script src="https://gist.github.com/penguinpowernz/6c55fcdd603e3d59953d0155e01482a3.js"></script>
+        <div style=" width: 45%">
+            <h3>Update payload</h3>
+            <script src="https://gist.github.com/penguinpowernz/6c55fcdd603e3d59953d0155e01482a3.js"></script>
+        </div>
+    </div>
 
-    Example code of how to use this can be found in the projects <a href="https://github.com/penguinpowernz/go-geonet-events">README</a>.
+    <div>
+        Example code of how to use this can be found in the projects <a href="https://github.com/penguinpowernz/go-geonet-events">README</a>.
 
-    <h2>Websockets Test</h2>
-    <p>Below is an example of the websockets events running.  When a new earthquake happens you should see it appear below.</p>
-    <div id="container" class="code" style="padding: 10px; padding-left: 20px;"></div>
+        <h2>Websockets Test</h2>
+        <p>Below is an example of the websockets events running.  When a new earthquake happens you should see it appear below.</p>
+        <div id="container" class="code" style="padding: 10px; padding-left: 20px;"></div>
+    </div>
 
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script type="text/javascript">
