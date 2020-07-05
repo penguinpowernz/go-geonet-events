@@ -1,11 +1,23 @@
 package geonet
 
+// Volcano represents a volcano status
 type Volcano struct {
-	VolcanoProperties
+	volcanoProperties
 	Coordinates []float64 `json:"coordinates"`
 }
 
-type VolcanoProperties struct {
+// Volcanos will return a list containing the status of
+// all volcanos in the Zelandian continent
+func (c *Client) Volcanos() ([]Volcano, error) {
+	resp := volcanoAPIResponse{}
+	if err := c.Get("/volcano/val", &resp); err != nil {
+		return []Volcano{}, err
+	}
+
+	return resp.Volcanos(), nil
+}
+
+type volcanoProperties struct {
 	// a unique identifier for the volcano
 	ID string `json:"volcanoID"`
 
@@ -22,26 +34,17 @@ type VolcanoProperties struct {
 	Hazards string `json:"hazards"`
 }
 
-type VolcanoFeature struct {
-	Feature
-	Properties VolcanoProperties `json:"properties"`
+type volcanoFeature struct {
+	feature
+	Properties volcanoProperties `json:"properties"`
 }
 
-type VolcanoAPIResponse struct {
+type volcanoAPIResponse struct {
 	Type     string           `json:"type"`
-	Features []VolcanoFeature `json:"features"`
+	Features []volcanoFeature `json:"features"`
 }
 
-func (c *Client) Volcanos() ([]Volcano, error) {
-	resp := VolcanoAPIResponse{}
-	if err := c.Get("/volcano/val", &resp); err != nil {
-		return []Volcano{}, err
-	}
-
-	return resp.Volcanos(), nil
-}
-
-func (res VolcanoAPIResponse) Volcanos() []Volcano {
+func (res volcanoAPIResponse) Volcanos() []Volcano {
 	reports := []Volcano{}
 
 	for _, f := range res.Features {

@@ -5,86 +5,17 @@ import (
 	"time"
 )
 
-const DefaultMMI = 0
+// DefaultMMI is the mercali modified index score that
+// is used by default in API calls where none is specified
+const DefaultMMI = 2
 
+// Quake represents an Earthquake event
 type Quake struct {
-	QuakeProperties
+	quakeProperties
 	Coordinates []float64 `json:"coordinates"`
 }
 
-type FeltReport struct {
-	IntensityProperties
-	Coordinates []float64 `json:"coordinates"`
-}
-
-func (q Quake) FeltReports(c *Client) ([]FeltReport, error) {
-	resp := IntensityAPIResponse{}
-	err := c.Get("/intensity?type=reported&publicID="+q.PublicID, &resp)
-	if err != nil {
-		return []FeltReport{}, err
-	}
-
-	return resp.Reports(), nil
-}
-
-func (c *Client) Quake(id string) (Quake, error) {
-	resp := QuakeAPIResponse{}
-	if err := c.Get(sfmt("/quake/%s", id), &resp); err != nil {
-		return Quake{}, err
-	}
-
-	if len(resp.Quakes()) == 0 {
-		return Quake{}, fmt.Errorf("quake could not be parsed")
-	}
-
-	return resp.Quakes()[0], nil
-}
-
-func (c *Client) Quakes(mmis ...int) ([]Quake, error) {
-	mmi := DefaultMMI
-	if len(mmis) > 0 {
-		mmi = mmis[0]
-	}
-
-	resp := QuakeAPIResponse{}
-	if err := c.Get(sfmt("/quake?MMI=%d", mmi), &resp); err != nil {
-		return []Quake{}, err
-	}
-
-	return resp.Quakes(), nil
-}
-
-type QuakeAPIResponse struct {
-	Type     string         `json:"type"`
-	Features []QuakeFeature `json:"features"`
-}
-
-type IntensityAPIResponse struct {
-	Type     string             `json:"type"`
-	Features []IntensityFeature `json:"features"`
-}
-
-type Feature struct {
-	Type     string   `json:"type"`
-	Geometry Geometry `json:"geometry"`
-}
-
-type QuakeFeature struct {
-	Feature
-	Properties QuakeProperties `json:"properties"`
-}
-
-type IntensityFeature struct {
-	Feature
-	Properties IntensityProperties `json:"properties"`
-}
-
-type Geometry struct {
-	Type        string    `json:"type"`
-	Coordinates []float64 `json:"coordinates"`
-}
-
-type QuakeProperties struct {
+type quakeProperties struct {
 	// the unique public identifier for this quake
 	PublicID string `json:"publicID"`
 
@@ -107,12 +38,41 @@ type QuakeProperties struct {
 	Quality string `json:"quality"`
 }
 
-type IntensityProperties struct {
-	MMI   int `json:"mmi"`
-	Count int `json:"count"`
+// Quake will get a specific quake by the ID
+func (c *Client) Quake(id string) (Quake, error) {
+	resp := quakeAPIResponse{}
+	if err := c.Get(sfmt("/quake/%s", id), &resp); err != nil {
+		return Quake{}, err
+	}
+
+	if len(resp.Quakes()) == 0 {
+		return Quake{}, fmt.Errorf("quake could not be parsed")
+	}
+
+	return resp.Quakes()[0], nil
 }
 
-func (res QuakeAPIResponse) Quakes() []Quake {
+// Quakes will return any recent quakes with the given MMI or higher
+func (c *Client) Quakes(mmis ...int) ([]Quake, error) {
+	mmi := DefaultMMI
+	if len(mmis) > 0 {
+		mmi = mmis[0]
+	}
+
+	resp := quakeAPIResponse{}
+	if err := c.Get(sfmt("/quake?MMI=%d", mmi), &resp); err != nil {
+		return []Quake{}, err
+	}
+
+	return resp.Quakes(), nil
+}
+
+type quakeAPIResponse struct {
+	Type     string         `json:"type"`
+	Features []quakeFeature `json:"features"`
+}
+
+func (res quakeAPIResponse) Quakes() []Quake {
 	quakes := []Quake{}
 
 	for _, qf := range res.Features {
@@ -123,13 +83,17 @@ func (res QuakeAPIResponse) Quakes() []Quake {
 	return quakes
 }
 
-func (res IntensityAPIResponse) Reports() []FeltReport {
-	reports := []FeltReport{}
+type feature struct {
+	Type     string   `json:"type"`
+	Geometry geometry `json:"geometry"`
+}
 
-	for _, f := range res.Features {
-		r := FeltReport{f.Properties, f.Geometry.Coordinates}
-		reports = append(reports, r)
-	}
+type quakeFeature struct {
+	feature
+	Properties quakeProperties `json:"properties"`
+}
 
-	return reports
+type geometry struct {
+	Type        string    `json:"type"`
+	Coordinates []float64 `json:"coordinates"`
 }
