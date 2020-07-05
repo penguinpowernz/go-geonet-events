@@ -73,34 +73,4 @@ is usually due to revisions to the magnitude and depth of the quakes, the `quali
 
 # Usage
 
-## NATS
-
-Golang:
-
-```golang
-import "github.com/nats-io/nats.go"
-
-nc, err := nats.Connect("nats://quakes.nz:4222", nats.UserInfo("client", ""))
-
-sub, err := nc.SubscribeSync("geonet.quakes.>")
-msg := sub.Next()
-
-fmt.Printf("Received: %s", msg.Data)
-```
-
-## Websocket
-
-Golang:
-
-```golang
-import "golang.org/x/net/websocket"
-
-url := "ws://quakes.nz/events"
-origin := "http://quakes.nz/"
-ws, err := websocket.Dial(url, "", origin)
-
-var msg = make([]byte, 512)
-n, err := ws.Read(msg)
-
-fmt.Printf("Received: %s.\n", msg[:n])
-```
+You can see the clients written in golang in the `cmd` directory.
